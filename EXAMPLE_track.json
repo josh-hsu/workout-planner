@@ -1,0 +1,82 @@
+{
+  "video": "BC64.mp4",
+  "tracks": [
+    {
+      "serial": 1,
+      "name": "Warm Up",
+      "training": "Warm Up",
+      "start": 0,
+      "end": 332
+    },
+    {
+      "serial": 2,
+      "name": "Combat Track 1",
+      "training": "Jab Cross",
+      "start": 332,
+      "end": 612
+    },
+    {
+      "serial": 3,
+      "name": "Combat Track 2",
+      "training": "Upper Cut",
+      "start": 612,
+      "end": 892
+    },
+    {
+      "serial": 4,
+      "name": "Combat Track 3",
+      "training": "Hook",
+      "start": 892,
+      "end": 1172
+    },
+    {
+      "serial": 5,
+      "name": "Combat Track 4",
+      "training": "Speed Bag",
+      "start": 1172,
+      "end": 1452
+    },
+    {
+      "serial": 6,
+      "name": "Combat Track 5",
+      "training": "Combo",
+      "start": 1452,
+      "end": 1732
+    },
+    {
+      "serial": 7,
+      "name": "Combat Track 6",
+      "training": "Power",
+      "start": 1732,
+      "end": 2012
+    },
+    {
+      "serial": 8,
+      "name": "Combat Track 7",
+      "training": "Conditioning",
+      "start": 2012,
+      "end": 2292
+    },
+    {
+      "serial": 9,
+      "name": "Combat Track 8",
+      "training": "Muay Thai",
+      "start": 2292,
+      "end": 2572
+    },
+    {
+      "serial": 10,
+      "name": "Combat Track 9",
+      "training": "Power Training",
+      "start": 2572,
+      "end": 2852
+    },
+    {
+      "serial": 11,
+      "name": "Cool Down",
+      "training": "Cool Down",
+      "start": 2852,
+      "end": 3132
+    }
+  ]
+}
