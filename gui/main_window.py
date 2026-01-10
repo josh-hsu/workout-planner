@@ -11,15 +11,16 @@ from pathlib import Path
 class MainWindow:
     """主視窗類別"""
 
-    def __init__(self, root):
+    def __init__(self, root, workspace_dir):
         """
         初始化主視窗
 
         Args:
             root: Tkinter 根視窗
+            workspace_dir: 工作目錄路徑 (Path 物件)
         """
         self.root = root
-        self.work_dir = Path.cwd()
+        self.work_dir = workspace_dir
 
         # 設定視窗
         self._setup_ui()
