@@ -232,9 +232,28 @@ class TrackEditorWindow:
         """
         dialog = tk.Toplevel(self.window)
         dialog.title("編輯分段資訊")
-        dialog.geometry("400x300")
         dialog.transient(self.window)
         dialog.grab_set()
+
+        # 設置對話框大小
+        dialog_width = 400
+        dialog_height = 300
+
+        # 更新視窗以獲取正確的尺寸
+        dialog.update_idletasks()
+
+        # 計算母視窗的中心位置
+        parent_x = self.window.winfo_x()
+        parent_y = self.window.winfo_y()
+        parent_width = self.window.winfo_width()
+        parent_height = self.window.winfo_height()
+
+        # 計算對話框應該放置的位置（置中）
+        x = parent_x + (parent_width - dialog_width) // 2
+        y = parent_y + (parent_height - dialog_height) // 2
+
+        # 設置對話框位置和大小
+        dialog.geometry(f"{dialog_width}x{dialog_height}+{x}+{y}")
 
         # 序號
         ttk.Label(dialog, text="序號:").grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
@@ -313,8 +332,9 @@ class TrackEditorWindow:
         ttk.Button(button_frame, text="儲存", command=save_track).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_frame, text="取消", command=dialog.destroy).pack(side=tk.LEFT, padx=5)
 
-        # 綁定 Enter 鍵到儲存功能
+        # 綁定 Enter 鍵到儲存功能（主鍵盤和數字鍵盤）
         dialog.bind('<Return>', lambda event: save_track())
+        dialog.bind('<KP_Enter>', lambda event: save_track())
 
     def _refresh_track_list(self):
         """刷新分段列表"""
