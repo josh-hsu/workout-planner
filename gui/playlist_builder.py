@@ -78,6 +78,18 @@ class PlaylistBuilderWindow:
         left_frame = ttk.LabelFrame(content_frame, text="課程分段資訊", padding=10)
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
 
+        # 篩選選項
+        filter_frame = ttk.Frame(left_frame)
+        filter_frame.pack(fill=tk.X, pady=(0, 5))
+
+        self.show_favorites_only = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            filter_frame,
+            text="只顯示最愛",
+            variable=self.show_favorites_only,
+            command=self._on_filter_changed
+        ).pack(side=tk.LEFT)
+
         # 課程分段列表（使用 Treeview）
         self.video_tree = ttk.Treeview(left_frame, show='tree', height=20)
         video_scrollbar = ttk.Scrollbar(left_frame, orient=tk.VERTICAL, command=self.video_tree.yview)
@@ -163,6 +175,10 @@ class PlaylistBuilderWindow:
         self.selected_category = self.category_var.get()
         self._load_videos()
 
+    def _on_filter_changed(self):
+        """當篩選條件改變時"""
+        self._load_videos()
+
     def _load_videos(self):
         """載入選中課程種類的所有影片"""
         # 清空列表
@@ -192,9 +208,19 @@ class PlaylistBuilderWindow:
                 tracks = track_manager.get_all_tracks()
                 video_rel_path = get_relative_path(video_path, self.work_dir)
 
+                # 篩選 tracks（如果啟用了只顯示最愛）
+                show_favorites_only = self.show_favorites_only.get()
+                has_visible_tracks = False
+
                 for track in tracks:
                     # 檢查是否為最愛
                     is_fav = self.config_manager.is_favorite(video_rel_path, track.serial)
+
+                    # 如果啟用「只顯示最愛」且此 track 不是最愛，則跳過
+                    if show_favorites_only and not is_fav:
+                        continue
+
+                    has_visible_tracks = True
                     fav_icon = "★" if is_fav else "☆"
 
                     track_text = f"{fav_icon} Track {track.serial}: {track.name or '(無名稱)'}"
@@ -209,8 +235,12 @@ class PlaylistBuilderWindow:
                         values=(str(video_path), track.serial)
                     )
 
-                # 展開影片節點
-                self.video_tree.item(video_node, open=True)
+                # 如果沒有可見的 tracks，則不顯示這個影片節點
+                if not has_visible_tracks:
+                    self.video_tree.delete(video_node)
+                else:
+                    # 展開影片節點
+                    self.video_tree.item(video_node, open=True)
 
     def _on_track_double_click(self, event):
         """當雙擊分段時，加入到播放清單"""
