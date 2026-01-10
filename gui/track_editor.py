@@ -150,7 +150,7 @@ class TrackEditorWindow:
         file_path = filedialog.askopenfilename(
             title="選擇影片檔案",
             initialdir=self.work_dir,
-            filetypes=[("MP4 影片", "*.mp4"), ("所有檔案", "*.*")]
+            filetypes=[("影片檔案", "*.mp4 *.m4v"), ("所有檔案", "*.*")]
         )
 
         if not file_path:
@@ -312,6 +312,9 @@ class TrackEditorWindow:
 
         ttk.Button(button_frame, text="儲存", command=save_track).pack(side=tk.LEFT, padx=5)
         ttk.Button(button_frame, text="取消", command=dialog.destroy).pack(side=tk.LEFT, padx=5)
+
+        # 綁定 Enter 鍵到儲存功能
+        dialog.bind('<Return>', lambda event: save_track())
 
     def _refresh_track_list(self):
         """刷新分段列表"""

@@ -57,7 +57,7 @@ def time_str_to_seconds(time_str: str) -> float:
 
 def get_video_files(directory: Path) -> List[Path]:
     """
-    取得目錄下所有的影片檔案 (.mp4)
+    取得目錄下所有的影片檔案 (.mp4, .m4v)
 
     Args:
         directory: 目錄路徑
@@ -68,7 +68,10 @@ def get_video_files(directory: Path) -> List[Path]:
     if not directory.exists() or not directory.is_dir():
         return []
 
-    return sorted([f for f in directory.glob("*.mp4")])
+    video_files = []
+    video_files.extend(directory.glob("*.mp4"))
+    video_files.extend(directory.glob("*.m4v"))
+    return sorted(video_files)
 
 
 def get_workout_categories(work_dir: Path) -> List[str]:
@@ -135,7 +138,7 @@ def validate_video_file(file_path: Path) -> Tuple[bool, str]:
     if not file_path.is_file():
         return False, "不是檔案"
 
-    if file_path.suffix.lower() != '.mp4':
-        return False, "檔案格式必須為 .mp4"
+    if file_path.suffix.lower() not in ['.mp4', '.m4v']:
+        return False, "檔案格式必須為 .mp4 或 .m4v"
 
     return True, ""
