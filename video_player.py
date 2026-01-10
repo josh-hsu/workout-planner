@@ -75,6 +75,24 @@ class VideoPlayer(ttk.Frame):
         )
         self.stop_btn.pack(side=tk.LEFT, padx=5)
 
+        # 後退一秒按鈕
+        self.backward_btn = ttk.Button(
+            control_frame,
+            text="◀ -1秒",
+            command=self._backward_one_second,
+            state=tk.DISABLED
+        )
+        self.backward_btn.pack(side=tk.LEFT, padx=5)
+
+        # 前進一秒按鈕
+        self.forward_btn = ttk.Button(
+            control_frame,
+            text="+1秒 ▶",
+            command=self._forward_one_second,
+            state=tk.DISABLED
+        )
+        self.forward_btn.pack(side=tk.LEFT, padx=5)
+
         # 時間標籤
         self.time_label = ttk.Label(control_frame, text="00:00:00 / 00:00:00")
         self.time_label.pack(side=tk.LEFT, padx=20)
@@ -133,6 +151,8 @@ class VideoPlayer(ttk.Frame):
         # 啟用控制按鈕
         self.play_pause_btn.config(state=tk.NORMAL)
         self.stop_btn.config(state=tk.NORMAL)
+        self.backward_btn.config(state=tk.NORMAL)
+        self.forward_btn.config(state=tk.NORMAL)
         self.progress_scale.config(state=tk.NORMAL)
 
         # 更新時間標籤
@@ -212,6 +232,30 @@ class VideoPlayer(ttk.Frame):
         self.is_playing = False
         self.play_pause_btn.config(text="播放")
         self._show_frame(0)
+
+    def _backward_one_second(self):
+        """後退一秒"""
+        if not self.cap:
+            return
+
+        # 計算目標時間（當前時間減一秒）
+        current_time = self.get_current_time()
+        target_time = max(0, current_time - 1.0)
+
+        # 跳轉到目標時間
+        self.seek_to(target_time)
+
+    def _forward_one_second(self):
+        """前進一秒"""
+        if not self.cap:
+            return
+
+        # 計算目標時間（當前時間加一秒）
+        current_time = self.get_current_time()
+        target_time = min(self.duration, current_time + 1.0)
+
+        # 跳轉到目標時間
+        self.seek_to(target_time)
 
     def _play_loop(self):
         """播放循環（在背景執行緒中執行）"""

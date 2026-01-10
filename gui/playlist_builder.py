@@ -88,15 +88,17 @@ class PlaylistBuilderWindow:
         # 綁定雙擊事件
         self.video_tree.bind('<Double-Button-1>', self._on_track_double_click)
 
-        # 綁定右鍵點擊事件
-        self.video_tree.bind('<Button-3>', self._on_track_right_click)
+        # 綁定右鍵點擊事件（支援 macOS 和其他平台）
+        self.video_tree.bind('<Button-2>', self._on_track_right_click)  # macOS 右鍵
+        self.video_tree.bind('<Button-3>', self._on_track_right_click)  # Windows/Linux 右鍵
+        self.video_tree.bind('<Control-Button-1>', self._on_track_right_click)  # macOS Control+左鍵
 
         # 創建右鍵選單
         self.context_menu = tk.Menu(self.video_tree, tearoff=0)
-        self.context_menu.add_command(label="選擇分段", command=self._add_to_playlist_from_menu)
+        self.context_menu.add_command(label="新增至清單", command=self._add_to_playlist_from_menu)
         self.context_menu.add_command(label="預覽", command=self._preview_track)
         self.context_menu.add_separator()
-        self.context_menu.add_command(label="加入最愛/取消最愛", command=self._toggle_favorite)
+        self.context_menu.add_command(label="標記最愛 / 取消最愛", command=self._toggle_favorite)
 
         # 用於記錄右鍵點擊的項目
         self.right_clicked_item = None
