@@ -146,7 +146,7 @@ workout-planner/
 
 ## 注意事項
 
-- 影片檔案必須是 .mp4 格式
+- 影片檔案支援 .mp4 和 .m4v 格式
 - 建議先建立課程種類資料夾（如 BodyCombat、BodyPump）再放入影片
 - 分段描述檔 (.json) 會自動儲存在影片檔案的同一目錄
 - 播放清單會儲存在 `playlists/` 目錄下
