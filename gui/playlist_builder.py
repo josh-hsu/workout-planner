@@ -6,6 +6,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 from pathlib import Path
+import subprocess
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -427,9 +428,21 @@ class PlaylistBuilderWindow:
             messagebox.showerror("錯誤", "無法載入分段資訊")
             return
 
-        # 開啟預覽視窗
-        preview_window = tk.Toplevel(self.window)
-        PreviewWindow(preview_window, video_path, track)
+        # 使用 VLC player 外部開啟並跳到開始時間
+        try:
+            # macOS 上的 VLC 路徑
+            vlc_path = "/Applications/VLC.app/Contents/MacOS/VLC"
+
+            # 使用 subprocess 啟動 VLC，並跳轉到 track 的開始時間
+            subprocess.Popen([
+                vlc_path,
+                str(video_path),
+                f"--start-time={int(track.start)}"
+            ])
+        except FileNotFoundError:
+            messagebox.showerror("錯誤", "找不到 VLC player，請確認已安裝 VLC")
+        except Exception as e:
+            messagebox.showerror("錯誤", f"無法開啟 VLC player: {str(e)}")
 
     def _toggle_favorite(self):
         """切換最愛狀態"""
