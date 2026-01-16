@@ -9,10 +9,49 @@ from tkinter import filedialog, messagebox
 from pathlib import Path
 from gui.main_window import MainWindow
 
+# 儲存上次工作目錄的檔案路徑
+LAST_WORKDIR_FILE = Path(__file__).parent / ".last_workdir"
 
-def select_workspace():
+
+def load_last_workdir() -> Path | None:
+    """
+    載入上次使用的工作目錄
+
+    Returns:
+        Path: 上次使用的工作目錄，如果不存在或無效則返回 None
+    """
+    if not LAST_WORKDIR_FILE.exists():
+        return None
+
+    try:
+        workdir = Path(LAST_WORKDIR_FILE.read_text().strip())
+        if workdir.exists() and workdir.is_dir():
+            return workdir
+    except Exception:
+        pass
+
+    return None
+
+
+def save_last_workdir(workdir: Path):
+    """
+    儲存工作目錄到檔案
+
+    Args:
+        workdir: 要儲存的工作目錄路徑
+    """
+    try:
+        LAST_WORKDIR_FILE.write_text(str(workdir))
+    except Exception:
+        pass
+
+
+def select_workspace(initial_dir: Path = None) -> Path | None:
     """
     提示使用者選擇工作目錄
+
+    Args:
+        initial_dir: 初始目錄，如果為 None 則使用 home 目錄
 
     Returns:
         Path: 使用者選擇的工作目錄，如果取消則返回 None
@@ -31,7 +70,7 @@ def select_workspace():
     # 開啟資料夾選擇對話框
     workspace_path = filedialog.askdirectory(
         title="選擇工作目錄",
-        initialdir=Path.home()
+        initialdir=initial_dir or Path.home()
     )
 
     temp_root.destroy()
@@ -43,20 +82,27 @@ def select_workspace():
 
 def main():
     """主程式進入點"""
-    # 先選擇工作目錄
-    workspace = select_workspace()
+    # 嘗試載入上次的工作目錄
+    workspace = load_last_workdir()
+
+    # 如果沒有上次的工作目錄，提示選擇
+    if workspace is None:
+        workspace = select_workspace()
 
     if workspace is None:
         # 使用者取消選擇，結束程式
         return
 
+    # 儲存工作目錄
+    save_last_workdir(workspace)
+
     # 建立主視窗
     root = tk.Tk()
     root.title("Workout Planner")
-    root.geometry("600x400")
+    root.geometry("600x450")
 
-    # 傳入選擇的工作目錄
-    app = MainWindow(root, workspace)
+    # 傳入選擇的工作目錄和儲存回呼函式
+    app = MainWindow(root, workspace, on_workdir_change=save_last_workdir)
 
     # 啟動事件循環
     root.mainloop()

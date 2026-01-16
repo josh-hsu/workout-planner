@@ -4,23 +4,25 @@
 """
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from pathlib import Path
 
 
 class MainWindow:
     """主視窗類別"""
 
-    def __init__(self, root, workspace_dir):
+    def __init__(self, root, workspace_dir, on_workdir_change=None):
         """
         初始化主視窗
 
         Args:
             root: Tkinter 根視窗
             workspace_dir: 工作目錄路徑 (Path 物件)
+            on_workdir_change: 工作目錄變更時的回呼函式
         """
         self.root = root
         self.work_dir = workspace_dir
+        self._on_workdir_change = on_workdir_change
 
         # 設定視窗
         self._setup_ui()
@@ -65,14 +67,23 @@ class MainWindow:
         )
         create_playlist_btn.pack(pady=15)
 
+        # 變更工作目錄按鈕
+        change_workdir_btn = ttk.Button(
+            button_frame,
+            text="變更工作目錄",
+            command=self._change_workdir,
+            width=25
+        )
+        change_workdir_btn.pack(pady=15)
+
         # 底部資訊
-        info_label = ttk.Label(
+        self.info_label = ttk.Label(
             self.root,
             text=f"工作目錄: {self.work_dir}",
             font=('Arial', 9),
             foreground='gray'
         )
-        info_label.pack(side=tk.BOTTOM, pady=10)
+        self.info_label.pack(side=tk.BOTTOM, pady=10)
 
     def _open_track_editor(self):
         """開啟時間戳編輯器視窗"""
@@ -89,3 +100,18 @@ class MainWindow:
         # 建立新視窗
         builder_window = tk.Toplevel(self.root)
         PlaylistBuilderWindow(builder_window, self.work_dir)
+
+    def _change_workdir(self):
+        """變更工作目錄"""
+        new_workdir = filedialog.askdirectory(
+            title="選擇新的工作目錄",
+            initialdir=self.work_dir
+        )
+
+        if new_workdir:
+            self.work_dir = Path(new_workdir)
+            self.info_label.config(text=f"工作目錄: {self.work_dir}")
+
+            # 呼叫回呼函式儲存新的工作目錄
+            if self._on_workdir_change:
+                self._on_workdir_change(self.work_dir)
