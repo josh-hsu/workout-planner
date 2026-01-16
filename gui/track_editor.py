@@ -244,7 +244,7 @@ class TrackEditorWindow:
 
         # 設置對話框大小
         dialog_width = 400
-        dialog_height = 300
+        dialog_height = 320
 
         # 更新視窗以獲取正確的尺寸
         dialog.update_idletasks()

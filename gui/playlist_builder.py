@@ -156,13 +156,13 @@ class PlaylistBuilderWindow:
             delete_btn_frame,
             text="刪除選中項",
             command=self._delete_selected_item
-        ).pack(side=tk.LEFT)
+        ).pack(fill=tk.X)
 
         ttk.Button(
             delete_btn_frame,
             text="清空清單",
             command=self._clear_playlist
-        ).pack(side=tk.LEFT, padx=5)
+        ).pack(fill=tk.X, pady=(5, 0))
 
         # 底部：匯出按鈕
         export_frame = ttk.Frame(main_container)
