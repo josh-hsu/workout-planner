@@ -31,10 +31,14 @@ class TrackEditorWindow:
         self.track_manager: TrackManager = None
         self.tracks = []  # Track 物件列表
         self.mark_start_time = None  # 標記的開始時間
+        self._original_tracks = []  # 用於追蹤未儲存的變更
 
         # 設定視窗
         self.window.title("建立分段描述檔")
         self.window.geometry("900x800")
+
+        # 設定視窗關閉處理
+        self.window.protocol("WM_DELETE_WINDOW", self._on_close)
 
         self._setup_ui()
         self._prompt_select_video()
@@ -185,6 +189,9 @@ class TrackEditorWindow:
             self.tracks = self.track_manager.get_all_tracks()
             self._refresh_track_list()
             messagebox.showinfo("提示", "已載入現有的分段描述檔")
+
+        # 儲存原始狀態用於追蹤未儲存的變更
+        self._save_original_state()
 
         # 啟用標記按鈕
         self.mark_start_btn.config(state=tk.NORMAL)
@@ -407,5 +414,39 @@ class TrackEditorWindow:
         # 儲存
         if self.track_manager.save_tracks():
             messagebox.showinfo("成功", f"分段描述檔已匯出至\n{self.track_manager.json_path}")
+            # 更新原始狀態
+            self._save_original_state()
         else:
             messagebox.showerror("錯誤", "匯出失敗")
+
+    def _save_original_state(self):
+        """儲存目前的 tracks 狀態作為原始狀態"""
+        self._original_tracks = [
+            (t.serial, t.start, t.end, t.name, t.training)
+            for t in self.tracks
+        ]
+
+    def _has_unsaved_changes(self) -> bool:
+        """檢查是否有未儲存的變更"""
+        current_state = [
+            (t.serial, t.start, t.end, t.name, t.training)
+            for t in self.tracks
+        ]
+        return current_state != self._original_tracks
+
+    def _on_close(self):
+        """處理視窗關閉事件"""
+        if self._has_unsaved_changes():
+            result = messagebox.askyesnocancel(
+                "未儲存的變更",
+                "您有未儲存的變更。是否要在關閉前匯出？"
+            )
+            if result is None:  # 取消
+                return
+            elif result:  # 是 - 匯出後關閉
+                self._export_tracks()
+                # 如果匯出成功，_export_tracks 會更新 _original_tracks
+                # 再次檢查是否還有未儲存的變更（可能使用者取消了匯出）
+                if self._has_unsaved_changes():
+                    return
+        self.window.destroy()

@@ -39,6 +39,9 @@ class PlaylistBuilderWindow:
         self.window.title("建立課程播放清單")
         self.window.geometry("1000x700")
 
+        # 設定視窗關閉處理
+        self.window.protocol("WM_DELETE_WINDOW", self._on_close)
+
         self._setup_ui()
 
     def _setup_ui(self):
@@ -470,6 +473,22 @@ class PlaylistBuilderWindow:
 
         # 重新載入影片列表以更新顯示（星星圖標會自動更新）
         self._load_videos()
+
+    def _on_close(self):
+        """處理視窗關閉事件"""
+        if self.playlist_items:
+            result = messagebox.askyesnocancel(
+                "未儲存的變更",
+                "播放清單尚未匯出。是否要在關閉前匯出？"
+            )
+            if result is None:  # 取消
+                return
+            elif result:  # 是 - 匯出後關閉
+                self._export_playlist()
+                # 如果使用者在匯出對話框中取消，playlist_items 仍有內容
+                if self.playlist_items:
+                    return
+        self.window.destroy()
 
 
 class PreviewWindow:
