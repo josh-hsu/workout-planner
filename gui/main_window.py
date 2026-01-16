@@ -29,19 +29,23 @@ class MainWindow:
 
     def _setup_ui(self):
         """設定使用者介面"""
+        # 設定按鈕樣式
+        style = ttk.Style()
+        style.configure('Large.TButton', font=('Arial', 20))
+
         # 標題
         title_label = ttk.Label(
             self.root,
             text="Workout Planner",
-            font=('Arial', 24, 'bold')
+            font=('Arial', 48, 'bold')
         )
-        title_label.pack(pady=40)
+        title_label.pack(pady=20)
 
         # 副標題
         subtitle_label = ttk.Label(
             self.root,
             text="健身影片片段編排應用程式",
-            font=('Arial', 12)
+            font=('Arial', 24)
         )
         subtitle_label.pack(pady=10)
 
@@ -54,33 +58,36 @@ class MainWindow:
             button_frame,
             text="建立分段描述檔",
             command=self._open_track_editor,
-            width=25
+            width=25,
+            style='Large.TButton'
         )
-        create_track_btn.pack(pady=15)
+        create_track_btn.pack(pady=10)
 
         # 建立課程播放清單按鈕
         create_playlist_btn = ttk.Button(
             button_frame,
             text="建立課程播放清單",
             command=self._open_playlist_builder,
-            width=25
+            width=25,
+            style='Large.TButton'
         )
-        create_playlist_btn.pack(pady=15)
+        create_playlist_btn.pack(pady=10)
 
         # 變更工作目錄按鈕
         change_workdir_btn = ttk.Button(
             button_frame,
             text="變更工作目錄",
             command=self._change_workdir,
-            width=25
+            width=25,
+            style='Large.TButton'
         )
-        change_workdir_btn.pack(pady=15)
+        change_workdir_btn.pack(pady=10)
 
         # 底部資訊
         self.info_label = ttk.Label(
             self.root,
             text=f"工作目錄: {self.work_dir}",
-            font=('Arial', 9),
+            font=('Arial', 18),
             foreground='gray'
         )
         self.info_label.pack(side=tk.BOTTOM, pady=10)

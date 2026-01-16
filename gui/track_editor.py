@@ -35,7 +35,7 @@ class TrackEditorWindow:
 
         # 設定視窗
         self.window.title("建立分段描述檔")
-        self.window.geometry("900x800")
+        self.window.geometry("900x850")
 
         # 設定視窗關閉處理
         self.window.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -45,6 +45,10 @@ class TrackEditorWindow:
 
     def _setup_ui(self):
         """設定使用者介面"""
+        # 設定按鈕樣式
+        style = ttk.Style()
+        style.configure('Editor.TButton', font=('Arial', 15))
+
         # 主容器
         main_container = ttk.Frame(self.window)
         main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -53,7 +57,7 @@ class TrackEditorWindow:
         self.video_info_label = ttk.Label(
             main_container,
             text="未載入影片",
-            font=('Arial', 10)
+            font=('Arial', 15)
         )
         self.video_info_label.pack(pady=5)
 
@@ -73,7 +77,8 @@ class TrackEditorWindow:
             button_row,
             text="標記開始",
             command=self._mark_start,
-            state=tk.DISABLED
+            state=tk.DISABLED,
+            style='Editor.TButton'
         )
         self.mark_start_btn.pack(side=tk.LEFT, padx=5)
 
@@ -81,13 +86,15 @@ class TrackEditorWindow:
             button_row,
             text="標記結束",
             command=self._mark_end,
-            state=tk.DISABLED
+            state=tk.DISABLED,
+            style='Editor.TButton'
         )
         self.mark_end_btn.pack(side=tk.LEFT, padx=5)
 
         self.mark_info_label = ttk.Label(
             button_row,
             text="請先標記開始時間",
+            font=('Arial', 15),
             foreground='gray'
         )
         self.mark_info_label.pack(side=tk.LEFT, padx=20)
@@ -99,7 +106,8 @@ class TrackEditorWindow:
         ttk.Button(
             export_frame,
             text="匯出描述檔",
-            command=self._export_tracks
+            command=self._export_tracks,
+            style='Editor.TButton'
         ).pack(side=tk.RIGHT, padx=5)
 
         # 分段列表區域（後 pack，填充剩餘空間）
@@ -133,21 +141,23 @@ class TrackEditorWindow:
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # 編輯按鈕列
-        edit_button_row = ttk.Frame(list_frame)
-        edit_button_row.pack(fill=tk.X, pady=5)
+        # 編輯按鈕列（垂直排列）
+        edit_button_col = ttk.Frame(list_frame)
+        edit_button_col.pack(fill=tk.X, pady=5)
 
         ttk.Button(
-            edit_button_row,
+            edit_button_col,
             text="編輯選中項",
-            command=self._edit_selected_track
-        ).pack(side=tk.LEFT, padx=5)
+            command=self._edit_selected_track,
+            style='Editor.TButton'
+        ).pack(pady=3)
 
         ttk.Button(
-            edit_button_row,
+            edit_button_col,
             text="刪除選中項",
-            command=self._delete_selected_track
-        ).pack(side=tk.LEFT, padx=5)
+            command=self._delete_selected_track,
+            style='Editor.TButton'
+        ).pack(pady=3)
 
     def _prompt_select_video(self):
         """提示選擇影片檔案"""

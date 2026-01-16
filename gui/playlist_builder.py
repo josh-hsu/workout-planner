@@ -46,6 +46,12 @@ class PlaylistBuilderWindow:
 
     def _setup_ui(self):
         """設定使用者介面"""
+        # 設定按鈕樣式
+        style = ttk.Style()
+        style.configure('Builder.TButton', font=('Arial', 15))
+        style.configure('Builder.TRadiobutton', font=('Arial', 15))
+        style.configure('Builder.TCheckbutton', font=('Arial', 15))
+
         # 主容器
         main_container = ttk.Frame(self.window)
         main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -61,6 +67,7 @@ class PlaylistBuilderWindow:
             ttk.Label(
                 category_frame,
                 text="工作目錄下沒有找到課程種類資料夾\n請在工作目錄下建立課程資料夾（如 BodyCombat, BodyPump 等）",
+                font=('Arial', 15),
                 foreground='red'
             ).pack()
         else:
@@ -71,7 +78,8 @@ class PlaylistBuilderWindow:
                     text=category,
                     variable=self.category_var,
                     value=category,
-                    command=self._on_category_selected
+                    command=self._on_category_selected,
+                    style='Builder.TRadiobutton'
                 ).pack(side=tk.LEFT, padx=10)
 
         # 中間部分：分為左右兩欄
@@ -91,7 +99,8 @@ class PlaylistBuilderWindow:
             filter_frame,
             text="只顯示最愛",
             variable=self.show_favorites_only,
-            command=self._on_filter_changed
+            command=self._on_filter_changed,
+            style='Builder.TCheckbutton'
         ).pack(side=tk.LEFT)
 
         # 課程分段列表（使用 Treeview）
@@ -124,7 +133,7 @@ class PlaylistBuilderWindow:
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(5, 0))
 
         # 總時長標籤
-        self.duration_label = ttk.Label(right_frame, text="總時長: 00:00:00", font=('Arial', 10, 'bold'))
+        self.duration_label = ttk.Label(right_frame, text="總時長: 00:00:00", font=('Arial', 15, 'bold'))
         self.duration_label.pack(pady=5)
 
         # 已選分段列表
@@ -155,13 +164,15 @@ class PlaylistBuilderWindow:
         ttk.Button(
             delete_btn_frame,
             text="刪除選中項",
-            command=self._delete_selected_item
+            command=self._delete_selected_item,
+            style='Builder.TButton'
         ).pack(fill=tk.X)
 
         ttk.Button(
             delete_btn_frame,
             text="清空清單",
-            command=self._clear_playlist
+            command=self._clear_playlist,
+            style='Builder.TButton'
         ).pack(fill=tk.X, pady=(5, 0))
 
         # 底部：匯出按鈕
@@ -171,7 +182,8 @@ class PlaylistBuilderWindow:
         ttk.Button(
             export_frame,
             text="匯出播放清單",
-            command=self._export_playlist
+            command=self._export_playlist,
+            style='Builder.TButton'
         ).pack(side=tk.RIGHT, padx=5)
 
     def _on_category_selected(self):
@@ -526,14 +538,14 @@ class PreviewWindow:
         title_label = ttk.Label(
             self.window,
             text=title_text,
-            font=('Arial', 12, 'bold')
+            font=('Arial', 18, 'bold')
         )
         title_label.pack(pady=10)
 
         # 時間資訊
         from utils import seconds_to_time_str
         time_info = f"時間: {seconds_to_time_str(self.track.start)} - {seconds_to_time_str(self.track.end)} (時長: {seconds_to_time_str(self.track.duration)})"
-        time_label = ttk.Label(self.window, text=time_info)
+        time_label = ttk.Label(self.window, text=time_info, font=('Arial', 15))
         time_label.pack(pady=5)
 
         # 影片播放器
@@ -542,10 +554,13 @@ class PreviewWindow:
         self.video_player.pack(pady=10)
 
         # 關閉按鈕
+        style = ttk.Style()
+        style.configure('Preview.TButton', font=('Arial', 15))
         close_btn = ttk.Button(
             self.window,
             text="關閉",
-            command=self.window.destroy
+            command=self.window.destroy,
+            style='Preview.TButton'
         )
         close_btn.pack(pady=10)
 
