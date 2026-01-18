@@ -103,6 +103,19 @@ class PlaylistBuilderWindow:
             style='Builder.TCheckbutton'
         ).pack(side=tk.LEFT)
 
+        # 文字篩選
+        ttk.Label(filter_frame, text="篩選:", font=('Arial', 13)).pack(side=tk.LEFT, padx=(15, 5))
+        self.filter_text = tk.StringVar()
+        self.filter_text.trace_add('write', lambda *args: self._on_filter_changed())
+        filter_entry = ttk.Entry(filter_frame, textvariable=self.filter_text, width=20)
+        filter_entry.pack(side=tk.LEFT)
+
+        ttk.Button(
+            filter_frame,
+            text="清除",
+            command=lambda: self.filter_text.set('')
+        ).pack(side=tk.LEFT, padx=(5, 0))
+
         # 課程分段列表（使用 Treeview）
         self.video_tree = ttk.Treeview(left_frame, show='tree', height=20)
         video_scrollbar = ttk.Scrollbar(left_frame, orient=tk.VERTICAL, command=self.video_tree.yview)
@@ -132,13 +145,31 @@ class PlaylistBuilderWindow:
         right_frame = ttk.LabelFrame(content_frame, text="已選分段清單", padding=10)
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(5, 0))
 
-        # 總時長標籤
-        self.duration_label = ttk.Label(right_frame, text="總時長: 00:00:00", font=('Arial', 15, 'bold'))
-        self.duration_label.pack(pady=5)
+        # 頂部列：刪除按鈕 + 總時長
+        header_frame = ttk.Frame(right_frame)
+        header_frame.pack(fill=tk.X, pady=(0, 5))
+
+        ttk.Button(
+            header_frame,
+            text="刪除選中項",
+            command=self._delete_selected_item
+        ).pack(side=tk.LEFT)
+
+        ttk.Button(
+            header_frame,
+            text="清空清單",
+            command=self._clear_playlist
+        ).pack(side=tk.LEFT, padx=(5, 0))
+
+        self.duration_label = ttk.Label(header_frame, text="總時長: 00:00:00", font=('Arial', 15, 'bold'))
+        self.duration_label.pack(side=tk.RIGHT)
 
         # 已選分段列表
+        tree_frame = ttk.Frame(right_frame)
+        tree_frame.pack(fill=tk.BOTH, expand=True)
+
         columns = ('index', 'video', 'track', 'name', 'duration')
-        self.playlist_tree = ttk.Treeview(right_frame, columns=columns, show='headings', height=20)
+        self.playlist_tree = ttk.Treeview(tree_frame, columns=columns, show='headings', height=20)
 
         self.playlist_tree.heading('index', text='#')
         self.playlist_tree.heading('video', text='影片')
@@ -152,28 +183,10 @@ class PlaylistBuilderWindow:
         self.playlist_tree.column('name', width=150)
         self.playlist_tree.column('duration', width=80, anchor=tk.CENTER)
 
-        playlist_scrollbar = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=self.playlist_tree.yview)
+        playlist_scrollbar = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL, command=self.playlist_tree.yview)
         self.playlist_tree.configure(yscrollcommand=playlist_scrollbar.set)
         self.playlist_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         playlist_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-        # 刪除按鈕
-        delete_btn_frame = ttk.Frame(right_frame)
-        delete_btn_frame.pack(fill=tk.X, pady=5)
-
-        ttk.Button(
-            delete_btn_frame,
-            text="刪除選中項",
-            command=self._delete_selected_item,
-            style='Builder.TButton'
-        ).pack(fill=tk.X)
-
-        ttk.Button(
-            delete_btn_frame,
-            text="清空清單",
-            command=self._clear_playlist,
-            style='Builder.TButton'
-        ).pack(fill=tk.X, pady=(5, 0))
 
         # 底部：匯出按鈕
         export_frame = ttk.Frame(main_container)
@@ -224,8 +237,9 @@ class PlaylistBuilderWindow:
                 tracks = track_manager.get_all_tracks()
                 video_rel_path = get_relative_path(video_path, self.work_dir)
 
-                # 篩選 tracks（如果啟用了只顯示最愛）
+                # 篩選 tracks（如果啟用了只顯示最愛或有文字篩選）
                 show_favorites_only = self.show_favorites_only.get()
+                filter_keyword = self.filter_text.get().strip().lower()
                 has_visible_tracks = False
 
                 for track in tracks:
@@ -235,6 +249,13 @@ class PlaylistBuilderWindow:
                     # 如果啟用「只顯示最愛」且此 track 不是最愛，則跳過
                     if show_favorites_only and not is_fav:
                         continue
+
+                    # 文字篩選：檢查 track.name 或 track.training 是否包含關鍵字
+                    if filter_keyword:
+                        track_name = (track.name or '').lower()
+                        track_training = (track.training or '').lower()
+                        if filter_keyword not in track_name and filter_keyword not in track_training:
+                            continue
 
                     has_visible_tracks = True
                     fav_icon = "★" if is_fav else "☆"
